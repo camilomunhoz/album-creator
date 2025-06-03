@@ -123,23 +123,34 @@ window.addEventListener('beforeprint', function () {
     const oddPageGroups = groupPages(oddPages);
     const evenPageGroups = groupPages(evenPages);
 
+    const totalSheets = oddPageGroups.length + evenPageGroups.length;
+
+    function createLabel(current) {
+        return $('<label>', { html: `Sheet <b>${current}</b> out of <b>${totalSheets}</b>` })
+    }
+
+    let currentSheet = 1;
+
     for (let i = 0; i < Math.max(oddPageGroups.length, evenPageGroups.length); i++) {
         const oddGroup = oddPageGroups[i] || [];
         const evenGroup = evenPageGroups[i] || [];
 
-        const $oddA3 = $('<div class="a3-page odd"></div>');
-        const $evenA3 = $('<div class="a3-page even"></div>');
+        const $oddA3 = $('<div class="a3-page odd printonly"></div>');
+        const $evenA3 = $('<div class="a3-page even printonly"></div>');
+
+        $oddA3.append(createLabel(currentSheet++));
+        $evenA3.append(createLabel(currentSheet++));
 
         $(oddGroup).each(function() {
             const $wrapper = $('<div class="page-wrapper"></div>');
             $wrapper.append($(this).clone(true, true));
             $oddA3.append($wrapper);
         });
-       for (let j = evenGroup.length - 1; j >= 0; j--) {
+        $(evenGroup).each(function() {
             const $wrapper = $('<div class="page-wrapper"></div>');
-            $wrapper.append($(evenGroup[j]).clone(true, true));
+            $wrapper.append($(this).clone(true, true));
             $evenA3.append($wrapper);
-        }
+        });
 
         $('body').append($oddA3, $evenA3);
     }

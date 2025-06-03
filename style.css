@@ -84,24 +84,20 @@ img {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.printonly {
-    display: none;
-}
+/* -------------------------------------------------------------------------- */
+/*                               Printing layout                              */
+/* -------------------------------------------------------------------------- */
 
 .a3-page {
     width: 420mm;
     height: 297mm;
     border: 1pt solid black;
     position: relative;
-    padding: 5mm;
+    padding: 10mm;
     display: grid;
-    grid-auto-flow: row;
     justify-items: start;
-    grid-template-columns: repeat(auto-fill, 8cm);
-}
-
-.a3-page.even {
-    align-content: end;
+    grid-template-columns: repeat(auto-fill, 18cm);
+    grid-template-rows: repeat(auto-fill, 9cm);
 }
 
 .a3-page .page-wrapper {
@@ -110,7 +106,52 @@ img {
     display: block;
 }
 
+.a3-page label {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    position: absolute;
+    bottom: 12mm;
+    right: 10mm;
+}
+
+/*
+ * Even pages must mirror vertically the odd pages layout
+ */
+.a3-page.even {
+    align-content: end;
+}
+.a3-page.even .page-wrapper:nth-of-type(1),
+.a3-page.even .page-wrapper:nth-of-type(3),
+.a3-page.even .page-wrapper:nth-of-type(5) {
+    grid-column: 1 / 2;
+}
+.a3-page.even .page-wrapper:nth-of-type(2),
+.a3-page.even .page-wrapper:nth-of-type(4),
+.a3-page.even .page-wrapper:nth-of-type(6) {
+    grid-column: 2 / 2;
+}
+.a3-page.even .page-wrapper:nth-of-type(1),
+.a3-page.even .page-wrapper:nth-of-type(2) {
+    grid-row: 3 / 4;
+}
+.a3-page.even .page-wrapper:nth-of-type(3),
+.a3-page.even .page-wrapper:nth-of-type(4) {
+    grid-row: 2 / 3;
+}
+.a3-page.even .page-wrapper:nth-of-type(5),
+.a3-page.even .page-wrapper:nth-of-type(6) {
+    grid-row: 1 / 2;
+}
+
+.printonly {
+    display: none;
+}
+
 @media print {
+    @page {
+        size: A3 landscape;
+        margin: 0;
+    }
     .screenonly,
     .punchmarks,
     .page::before {
