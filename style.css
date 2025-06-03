@@ -1,0 +1,190 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --cutmark-offset: 85%;
+    --cutmark-size: 10px;
+    --cutmark-ratio: 2;
+}
+
+@page {
+    margin: 0;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    padding: calc(var(--cutmark-size) * var(--cutmark-ratio));
+    margin: 0;
+}
+
+.album {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--cutmark-size) * var(--cutmark-ratio));
+}
+
+.album[data-cut-preview="false"] .punchmarks,
+.album[data-cut-preview="false"] .page::before {
+    display: none;
+}
+
+.page {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    height: 8cm;
+    width: fit-content;
+    border: 1pt solid #ccc;
+    font-size: 9pt;
+}
+
+.sidebar {
+    width: 150px;
+}
+
+.content {
+    padding: 2em;
+    padding-left: 3em;
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+.content .text {
+    transform: rotate(180deg);
+    writing-mode: vertical-rl;
+    line-height: 1.2;
+    height: 100%;
+}
+.content .text p {
+    margin: 0;
+}
+.content:hover {
+    opacity: 0.6;
+}
+
+img {
+    aspect-ratio: 3 / 2;
+    height: 100%;
+    object-fit: cover;
+}
+
+.page::before {
+    content: '';
+    position: absolute;
+    top: calc(calc(var(--cutmark-size) / 2) - 1pt);
+    left: calc(calc(var(--cutmark-size) / 2) - 1pt);
+    right: calc(calc(var(--cutmark-size) / 2) - 1pt);
+    bottom: calc(calc(var(--cutmark-size) / 2) - 1pt);
+    border: 1pt solid black;
+    box-sizing: border-box;
+}
+
+.floating-window {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 8cm;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.printonly {
+    display: none;
+}
+
+@media print {
+    .screenonly {
+        display: none;
+    }
+    .printonly {
+        display: block;
+    }
+    body {
+        padding: 0;
+    }
+}
+
+
+
+
+
+
+
+
+
+/* -------------------------------------------------------------------------- */
+/*                                    MARKS                                   */
+/* -------------------------------------------------------------------------- */
+
+.cutmark {
+    position: absolute;
+    width: var(--cutmark-size);
+    height: var(--cutmark-size);
+}
+
+.cutmark::before {
+    content: '';
+    border-top: 1pt solid black;
+    top: 50%;
+    left: var(--cutmark-offset);
+    width: calc(100% * var(--cutmark-ratio));
+    position: absolute;
+}
+
+.cutmark::after {
+    content: '';
+    border-left: 1pt solid black;
+    top: var(--cutmark-offset);
+    left: 50%;
+    height: calc(100% * var(--cutmark-ratio));
+    position: absolute;
+}
+
+.cutmark:nth-child(1) {
+    top: 0;
+    left: 0;
+    rotate: 180deg;
+}
+
+.cutmark:nth-child(2) {
+    top: 0;
+    right: 0;
+    rotate: 270deg;
+}
+
+.cutmark:nth-child(3) {
+    bottom: 0;
+    left: 0;
+    rotate: 90deg;
+}
+
+.cutmark:nth-child(4) {
+    bottom: 0;
+    right: 0;
+    rotate: 0deg;
+}
+
+.punchmarks {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0.3cm;
+    justify-content: space-between;
+}
+
+.punchmarks i {
+    width: 0.5cm;
+    height: 0.5cm;
+    border-radius: 50%;
+    border: solid 1pt black;
+}
