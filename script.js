@@ -127,15 +127,19 @@ window.addEventListener('beforeprint', function () {
         const oddGroup = oddPageGroups[i] || [];
         const evenGroup = evenPageGroups[i] || [];
 
-        const $oddA3 = $('<div class="a3-page printonly"></div>');
-        const $evenA3 = $('<div class="a3-page printonly></div>');
+        const $oddA3 = $('<div class="a3-page odd"></div>');
+        const $evenA3 = $('<div class="a3-page even"></div>');
 
         $(oddGroup).each(function() {
-            $oddA3.append($(this).clone(true, true));
+            const $wrapper = $('<div class="page-wrapper"></div>');
+            $wrapper.append($(this).clone(true, true));
+            $oddA3.append($wrapper);
         });
-        $(evenGroup).each(function() {
-            $evenA3.append($(this).clone(true, true));
-        });
+       for (let j = evenGroup.length - 1; j >= 0; j--) {
+            const $wrapper = $('<div class="page-wrapper"></div>');
+            $wrapper.append($(evenGroup[j]).clone(true, true));
+            $evenA3.append($wrapper);
+        }
 
         $('body').append($oddA3, $evenA3);
     }

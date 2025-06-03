@@ -4,7 +4,7 @@
 
 :root {
     --cutmark-offset: 85%;
-    --cutmark-size: 10px;
+    --cutmark-size: 8px;
     --cutmark-ratio: 2;
 }
 
@@ -75,17 +75,6 @@ img {
     object-fit: cover;
 }
 
-.page::before {
-    content: '';
-    position: absolute;
-    top: calc(calc(var(--cutmark-size) / 2) - 1pt);
-    left: calc(calc(var(--cutmark-size) / 2) - 1pt);
-    right: calc(calc(var(--cutmark-size) / 2) - 1pt);
-    bottom: calc(calc(var(--cutmark-size) / 2) - 1pt);
-    border: 1pt solid black;
-    box-sizing: border-box;
-}
-
 .floating-window {
     position: fixed;
     top: 20px;
@@ -99,15 +88,46 @@ img {
     display: none;
 }
 
+.a3-page {
+    width: 420mm;
+    height: 297mm;
+    border: 1pt solid black;
+    position: relative;
+    padding: 5mm;
+    display: grid;
+    grid-auto-flow: row;
+    justify-items: start;
+    grid-template-columns: repeat(auto-fill, 8cm);
+}
+
+.a3-page.even {
+    align-content: end;
+}
+
+.a3-page .page-wrapper {
+    height: 8cm;
+    margin: 0.5cm;
+    display: block;
+}
+
 @media print {
-    .screenonly {
-        display: none;
+    .screenonly,
+    .punchmarks,
+    .page::before {
+        display: none !important;
     }
-    .printonly {
+    .printonly,
+    .cutmark {
         display: block;
+    }
+    .a3-page.printonly {
+        display: grid;
     }
     body {
         padding: 0;
+    }
+    .a3-page {
+        border: none;
     }
 }
 
@@ -187,4 +207,15 @@ img {
     height: 0.5cm;
     border-radius: 50%;
     border: solid 1pt black;
+}
+
+.page::before { /* cut limit */
+    content: '';
+    position: absolute;
+    top: calc(calc(var(--cutmark-size) / 2) - 1pt);
+    left: calc(calc(var(--cutmark-size) / 2) - 1pt);
+    right: calc(calc(var(--cutmark-size) / 2) - 1pt);
+    bottom: calc(calc(var(--cutmark-size) / 2) - 1pt);
+    border: 1pt solid black;
+    box-sizing: border-box;
 }
