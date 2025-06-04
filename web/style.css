@@ -18,19 +18,63 @@ body {
 }
 
 body {
-    padding: calc(var(--cutmark-size) * var(--cutmark-ratio));
     margin: 0;
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #222;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    background: #222;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 8px;
+    border: 2px solid #222;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: #aaa;
+}
+
+*::-webkit-scrollbar-corner {
+    background: #222;
+}
+
+.sidebar {
+    background-color: #272727;
 }
 
 .album {
     display: flex;
     flex-wrap: wrap;
-    gap: calc(var(--cutmark-size) * var(--cutmark-ratio));
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2em;
+    padding: 2em;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #343434;
 }
 
-.album[data-cut-preview="false"] .punchmarks,
-.album[data-cut-preview="false"] .page::before {
-    display: none;
+.gallery {
+    background-color: #272727;
+    height: 100vh;
+    overflow-y: auto;
+    padding-top: 1em;
+}
+
+.gallery-image {
+    width: 100%;
+    margin-bottom: 1em;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1pt solid #777777;
 }
 
 .page {
@@ -40,17 +84,28 @@ body {
     align-items: stretch;
     height: 8cm;
     width: fit-content;
-    border: 1pt solid #ccc;
     font-size: 9pt;
+    background-color: white;
 }
 
-.sidebar {
+.album .page-wrapper {
+    width: fit-content;
+}
+
+.album .page-bar {
+    color: rgb(196, 196, 196);
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+}
+
+.description {
     width: 150px;
 }
 
 .content {
     padding: 2em;
-    padding-left: 3em;
+    padding-left: 3.5em;
     height: 100%;
     width: 100%;
     cursor: pointer;
@@ -69,7 +124,7 @@ body {
     opacity: 0.6;
 }
 
-img {
+.album .page img {
     aspect-ratio: 3 / 2;
     height: 100%;
     object-fit: cover;
@@ -183,6 +238,21 @@ img {
 /* -------------------------------------------------------------------------- */
 /*                                    MARKS                                   */
 /* -------------------------------------------------------------------------- */
+
+
+/* .album[data-cut-preview="true"] .cutmark, */
+.album[data-cut-preview="true"] .page::before {
+    display: block;
+}
+.album[data-cut-preview="true"] .punchmarks {
+    display: flex;
+}
+.album .cutmark,
+.album .punchmarks,
+.album .page::before {
+    display: none;
+}
+
 
 .cutmark {
     position: absolute;
