@@ -1,7 +1,21 @@
 $(document).ready(function () {
     loadAlbumData();
     loadGallery();
+
     $('.btn-refresh-gallery').on('click', loadGallery);
+    $('.btn-print').on('click', () => window.print());
+    $('.btn-save-album').on('click', saveAlbum);
+
+    $('.album').sortable({
+        items: '.page-wrapper',
+        // containment: 'parent',
+        axis: 'y',
+        tolerance: 'pointer',
+        
+        update: function() {
+            refreshOrder();
+        }
+    });
 });
 
 /* -------------------------------------------------------------------------- */
@@ -42,7 +56,8 @@ function loadGallery() {
                 createPage({
                     filename: image,
                     order: $('.page').length + 1,
-                    caption: ''
+                    caption: '',
+                    id: generateId()
                 })
             })
             $gallery.append($img);
@@ -56,7 +71,9 @@ function loadGallery() {
 
 function loadAlbumData() {
     $.getJSON('/api/album', function (data) {
-        data.album.photos.forEach(function(photo) {
+        const photos = data.album?.photos || [];
+        photos.sort((a, b) => a.order - b.order);
+        photos.forEach(function(photo) {
             createPage(photo);
         });
     });
@@ -78,7 +95,7 @@ function createPage(photo) {
         }
 
         const pageHtml = `
-            <div class="page-wrapper" data-order="${photo.order}">
+            <div class="page-wrapper" data-order="${photo.order}" data-id="${photo.id || ''}">
                 <div class="page">
                     ${cutmarks}
                     <div class="punchmarks">
@@ -96,19 +113,66 @@ function createPage(photo) {
                     <div>
                         <span>Page ${photo.order} - ${photo.filename}</span>
                     </div>
-                    <div class="actions">Delete</div>
+                    <div class="actions">
+                        <div class="action btn-delete">Delete</div>
+                    </div>
                 </div>
             </div>
         `;
 
         const $page = $(pageHtml);
         $page.find('.page').append($img);
+
+        $page.find('.btn-delete').on('click', function () {
+            $page.remove();
+            refreshOrder();
+        });
         
-        $page.find('.content').off('click').on('click', function (event) {
+        $page.find('.content').on('click', function (event) {
             mirrorWithEditor(event, quill);
         });
 
         $('.album').append($page);
+    });
+}
+
+/* -------------------------------------------------------------------------- */
+/*                                   ACTIONS                                  */
+/* -------------------------------------------------------------------------- */
+
+function refreshOrder() {
+    $('.album .page-wrapper').each(function(index) {
+        $(this).attr('data-order', index + 1);
+        $(this).find('.page-bar span').text(`Page ${index + 1} - ${$(this).find('img').attr('src')?.split('/').pop() || ''}`);
+    });
+}
+
+function saveAlbum() {
+    const photos = [];
+    $('.album .page-wrapper').each(function() {
+        const $wrapper = $(this);
+
+        photos.push({
+            order: Number($wrapper.data('order')),
+            id: $wrapper.data('id') || '',
+            filename: $wrapper.find('img').attr('src')?.split('/').pop() || '',
+            caption: $wrapper.find('.text').text().trim(),
+        });
+    });
+
+    $.ajax({
+        url: '/api/save/album',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(photos),
+        success: function(response) {
+            const $check = $('<span class="save-check" style="margin-left:8px;color:white;">&#10003;</span>');
+            $('.btn-save-album').after($check);
+            setTimeout(() => $check.fadeOut(400, function() { $(this).remove(); }), 1200);
+        },
+        error: function(xhr) {
+            console.error('Erro ao salvar álbum: ' + (xhr.responseJSON?.error || xhr.statusText));
+        }
     });
 }
 
@@ -155,27 +219,43 @@ window.addEventListener('beforeprint', function () {
         const oddGroup = oddPageGroups[i] || [];
         const evenGroup = evenPageGroups[i] || [];
 
-        const $oddA3 = $('<div class="a3-page odd printonly"></div>');
-        const $evenA3 = $('<div class="a3-page even printonly"></div>');
+        if (oddGroup.length) {
+            const $oddA3 = $('<div class="a3-page odd printonly"></div>');
+            $oddA3.append(createLabel(currentSheet++));
+            $(oddGroup).each(function() {
+                const $wrapper = $('<div class="page-wrapper"></div>');
+                $wrapper.append($(this).clone(true, true));
+                $oddA3.append($wrapper);
+            });
+            $('body').append($oddA3);
+        }
 
-        $oddA3.append(createLabel(currentSheet++));
-        $evenA3.append(createLabel(currentSheet++));
-
-        $(oddGroup).each(function() {
-            const $wrapper = $('<div class="page-wrapper"></div>');
-            $wrapper.append($(this).clone(true, true));
-            $oddA3.append($wrapper);
-        });
-        $(evenGroup).each(function() {
-            const $wrapper = $('<div class="page-wrapper"></div>');
-            $wrapper.append($(this).clone(true, true));
-            $evenA3.append($wrapper);
-        });
-
-        $('body').append($oddA3, $evenA3);
+        if (evenGroup.length) {
+            const $evenA3 = $('<div class="a3-page even printonly"></div>');
+            $evenA3.append(createLabel(currentSheet++));
+            $(evenGroup).each(function() {
+                const $wrapper = $('<div class="page-wrapper"></div>');
+                $wrapper.append($(this).clone(true, true));
+                $evenA3.append($wrapper);
+            });
+            $('body').append($evenA3);
+        }
     }
 });
 
 window.addEventListener('afterprint', function () {
     $('.a3-page.printonly').remove();
 });
+
+/* -------------------------------------------------------------------------- */
+/*                                    UTILS                                   */
+/* -------------------------------------------------------------------------- */
+
+function generateId() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let id = '';
+    for (let i = 0; i < 8; i++) {
+        id += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return id;
+}
