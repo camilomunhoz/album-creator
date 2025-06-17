@@ -1,17 +1,14 @@
 $(document).ready(function () {
     loadAlbumData();
     loadGallery();
-
-    $('.content').on('click', function (event) {
-        mirrorWithEditor(event, quill);
-    });
+    $('.btn-refresh-gallery').on('click', loadGallery);
 });
 
 /* -------------------------------------------------------------------------- */
 /*                             DESCRIPTION EDITOR                             */
 /* -------------------------------------------------------------------------- */
 
-const quill = new Quill('#text-editor', {
+const quill = new Quill('#caption-editor', {
     theme: 'snow'
 });
 
@@ -41,6 +38,13 @@ function loadGallery() {
         data.forEach(function (image) {
             const imgUrl = `/photos/${image}`;
             const $img = $('<img>', { src: imgUrl, alt: image, class: 'gallery-image' });
+            $img.on('click', function () {
+                createPage({
+                    filename: image,
+                    order: $('.page').length + 1,
+                    caption: ''
+                })
+            })
             $gallery.append($img);
         });
     });
@@ -59,8 +63,6 @@ function loadAlbumData() {
 }
 
 function createPage(photo) {
-    $('.album').empty(); // Limpa o conteúdo anterior
-
     const imgUrl = `/photos/${photo.filename}`;
     const cutmarks = Array(4).fill('<div class="cutmark"></div>').join('');
     const punchmarks = Array(10).fill('<i></i>').join('');
@@ -91,14 +93,21 @@ function createPage(photo) {
                     </div>
                 </div>
                 <div class="page-bar">
-                    <span>Page ${photo.order}</span>
+                    <div>
+                        <span>Page ${photo.order} - ${photo.filename}</span>
+                    </div>
                     <div class="actions">Delete</div>
                 </div>
             </div>
         `;
-        // Adiciona a página e insere a imagem no local correto
+
         const $page = $(pageHtml);
         $page.find('.page').append($img);
+        
+        $page.find('.content').off('click').on('click', function (event) {
+            mirrorWithEditor(event, quill);
+        });
+
         $('.album').append($page);
     });
 }

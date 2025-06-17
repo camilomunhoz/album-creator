@@ -47,6 +47,13 @@ body {
 
 .sidebar {
     background-color: #272727;
+    padding: 1em;
+}
+.sidebar .item {
+    margin-bottom: 1em;
+}
+.sidebar .caption-editor-wrapper {
+    background-color: white;
 }
 
 .album {
@@ -110,6 +117,7 @@ body {
     width: 100%;
     cursor: pointer;
     transition: opacity 0.2s ease;
+    position: relative;
 }
 .content .text {
     transform: rotate(180deg);
@@ -123,20 +131,25 @@ body {
 .content:hover {
     opacity: 0.6;
 }
+.content::before {
+    content: '';
+    position: absolute;
+    top: 1em;
+    left: 2.2em;
+    right: 1em;
+    bottom: 1em;
+    border: 1pt dashed black;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.content:hover::before {
+    opacity: 0.6;
+}
 
 .album .page img {
     aspect-ratio: 3 / 2;
     height: 100%;
     object-fit: cover;
-}
-
-.floating-window {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 8cm;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 /* -------------------------------------------------------------------------- */

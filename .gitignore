@@ -1,4 +1,4 @@
 node_modules
 package-lock.json
-backend/photos/*
-!backend/photos/.gitkeep
+api/photos/*
+!api/photos/.gitkeep

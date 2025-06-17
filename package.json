@@ -4,7 +4,7 @@
   "description": "Photo album to the printer.",
   "main": "script.js",
   "scripts": {
-    "local": "concurrently \"vite\" \"nodemon api/src/server.js\""
+    "local": "concurrently \"vite\" \"node api/src/server.js\""
   },
   "author": "Camilo Munhoz",
   "license": "ISC",
