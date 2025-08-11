@@ -151,14 +151,17 @@ function saveAlbum() {
     const photos = [];
     $('.album .page-wrapper').each(function() {
         const $wrapper = $(this);
+        console.log($wrapper.data('order'), $wrapper.data('id'));
 
         photos.push({
-            order: Number($wrapper.data('order')),
+            order: Number($wrapper.attr('data-order')), // not data('order') due JQuery Sortable conflict
             id: $wrapper.data('id') || '',
             filename: $wrapper.find('img').attr('src')?.split('/').pop() || '',
             caption: $wrapper.find('.text').text().trim(),
         });
     });
+
+    console.log(photos);
 
     $.ajax({
         url: '/api/save/album',
