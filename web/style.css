@@ -15,6 +15,7 @@ body {
 
 body {
     margin: 0;
+    overflow-y: hidden;
 }
 
 * {
@@ -93,6 +94,32 @@ body {
 
 .album .page-wrapper {
     width: fit-content;
+}
+
+.sortable-placeholder {
+    width: 18cm;
+    height: 0;
+    border: 5px solid #888;
+    background-color: rgba(136, 136, 136, 0.1);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 14px;
+}
+
+.sortable-being-dragged {
+    transform: rotate(3deg) scale(0.9);
+    opacity: 0.9;
+    z-index: 1000;
+    cursor: grabbing !important;
+}
+
+.sortable-being-dragged .page {
+    border: 1px solid #fff0;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .album .page-bar {

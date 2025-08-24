@@ -11,7 +11,22 @@ $(document).ready(function () {
         // containment: 'parent',
         axis: 'y',
         tolerance: 'pointer',
+        placeholder: 'sortable-placeholder',
+        scroll: true,
+        scrollSensitivity: 200,
+        scrollSpeed: 20,
+        helper: 'clone',
+        opacity: 0.8,
         
+        start: function(event, ui) {
+            ui.helper.addClass('sortable-being-dragged');
+            ui.placeholder.height(0);
+        },
+        
+        stop: function(event, ui) {
+            ui.item.removeClass('sortable-being-dragged');
+        },
+
         update: function() {
             refreshOrder();
         }
@@ -147,7 +162,7 @@ function createPage(photo) {
 /* -------------------------------------------------------------------------- */
 
 function refreshOrder() {
-    $('.album .page-wrapper').each(function(index) {
+    $('.album .page-wrapper:not(.sortable-being-dragged)').each(function(index) {
         $(this).attr('data-order', index + 1);
         $(this).find('.page-bar span').text(`Page ${index + 1} - ${$(this).find('img').attr('src')?.split('/').pop() || ''}`);
     });
