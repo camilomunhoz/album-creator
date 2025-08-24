@@ -58,8 +58,8 @@ function loadGallery() {
                     order: $('.page').length + 1,
                     caption: '',
                     id: generateId()
-                })
-            })
+                });
+            });
             $gallery.append($img);
         });
     });
@@ -69,70 +69,76 @@ function loadGallery() {
 /*                                    ALBUM                                   */
 /* -------------------------------------------------------------------------- */
 
-function loadAlbumData() {
-    $.getJSON('/api/album', function (data) {
-        const photos = data.album?.photos || [];
-        photos.sort((a, b) => a.order - b.order);
-        photos.forEach(function(photo) {
-            createPage(photo);
-        });
-    });
+async function loadAlbumData() {
+    const response = await $.getJSON('/api/album');
+    const photos = response.album?.photos || [];
+    photos.sort((a, b) => a.order - b.order);
+
+    const pagePromises = photos.map(photo => createPage(photo));
+    
+    const $pages = await Promise.all(pagePromises);
+    
+    $('.album').empty();
+    $pages.forEach($page => $('.album').append($page));
 }
 
 function createPage(photo) {
-    const imgUrl = `/photos/${photo.filename}`;
-    const cutmarks = Array(4).fill('<div class="cutmark"></div>').join('');
-    const punchmarks = Array(10).fill('<i></i>').join('');
+    return new Promise((resolve) => {
+        const imgUrl = `/photos/${photo.filename}`;
+        const cutmarks = Array(4).fill('<div class="cutmark"></div>').join('');
+        const punchmarks = Array(10).fill('<i></i>').join('');
 
-    // Cria o elemento img para ler metadados dinamicamente
-    const $img = $('<img>', { src: imgUrl, alt: `Image ${photo.order}` });
+        const $img = $('<img>', { src: imgUrl, alt: `Image ${photo.order}` });
 
-    $img.on('load', function () {
-        // Detecta orientação baseada nas dimensões da imagem
-        const isPortrait = this.naturalHeight > this.naturalWidth;
-        if (isPortrait) {
-            $img.addClass('portrait-rotate');
-        }
+        $img.on('load', function () {
+            const isPortrait = this.naturalHeight > this.naturalWidth;
+            if (isPortrait) {
+                $img.addClass('portrait-rotate');
+            }
 
-        const pageHtml = `
-            <div class="page-wrapper" data-order="${photo.order}" data-id="${photo.id || ''}">
-                <div class="page">
-                    ${cutmarks}
-                    <div class="punchmarks">
-                        ${punchmarks}
-                    </div>
-                    <div class="description">
-                        <div class="content">
-                            <div class="text">
-                                <p>${photo.caption || ''}</p>
+            const pageHtml = `
+                <div class="page-wrapper" data-order="${photo.order}" data-id="${photo.id || ''}">
+                    <div class="page">
+                        ${cutmarks}
+                        <div class="punchmarks">${punchmarks}</div>
+                        <div class="description">
+                            <div class="content">
+                                <div class="text">
+                                    <p>${photo.caption || ''}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="page-bar">
-                    <div>
-                        <span>Page ${photo.order} - ${photo.filename}</span>
+                    <div class="page-bar">
+                        <div>
+                            <span>Page ${photo.order} - ${photo.filename}</span>
+                        </div>
+                        <div class="actions">
+                            <div class="action btn-delete">Delete</div>
+                        </div>
                     </div>
-                    <div class="actions">
-                        <div class="action btn-delete">Delete</div>
-                    </div>
                 </div>
-            </div>
-        `;
+            `;
 
-        const $page = $(pageHtml);
-        $page.find('.page').append($img);
+            const $page = $(pageHtml);
+            $page.find('.page').append($img);
 
-        $page.find('.btn-delete').on('click', function () {
-            $page.remove();
-            refreshOrder();
+            $page.find('.btn-delete').on('click', function () {
+                $page.remove();
+                refreshOrder();
+            });
+
+            $page.find('.content').on('click', function (event) {
+                mirrorWithEditor(event, quill);
+            });
+
+            // Não insere no DOM aqui, retorna o elemento
+            resolve($page);
         });
-        
-        $page.find('.content').on('click', function (event) {
-            mirrorWithEditor(event, quill);
-        });
 
-        $('.album').append($page);
+        $img.on('error', function () {
+            resolve(null); // ou crie uma página de erro
+        });
     });
 }
 
@@ -151,7 +157,6 @@ function saveAlbum() {
     const photos = [];
     $('.album .page-wrapper').each(function() {
         const $wrapper = $(this);
-        console.log($wrapper.data('order'), $wrapper.data('id'));
 
         photos.push({
             order: Number($wrapper.attr('data-order')), // not data('order') due JQuery Sortable conflict
@@ -160,8 +165,6 @@ function saveAlbum() {
             caption: $wrapper.find('.text').text().trim(),
         });
     });
-
-    console.log(photos);
 
     $.ajax({
         url: '/api/save/album',

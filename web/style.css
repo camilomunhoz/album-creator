@@ -8,10 +8,6 @@
     --cutmark-ratio: 2;
 }
 
-@page {
-    margin: 0;
-}
-
 html,
 body {
     height: 100%;
