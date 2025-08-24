@@ -31,7 +31,7 @@ function initializeSortable() {
     $('.album').sortable({
         items: '.page-wrapper',
         axis: 'y',
-        tolerance: 'pointer',
+        tolerance: 'intersect',
         placeholder: 'sortable-placeholder',
         scroll: true,
         scrollSensitivity: 200,

@@ -134,7 +134,8 @@ body {
 }
 
 .sortable-being-dragged .page {
-    border: 1px solid #fff0;
+    box-shadow: 0 0 30px #ffffff2c;
+    border: 1px solid #ffffff84;
     border-radius: 8px;
     overflow: hidden;
 }
