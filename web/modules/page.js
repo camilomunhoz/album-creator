@@ -2,7 +2,7 @@
  * Page Module - Manages album page creation and manipulation
  */
 
-import { processImage } from './imageProcessor.js';
+import { processImage, rotateToTarget, rotateExistingImage } from './imageProcessor.js';
 
 /**
  * Creates a new album page with processed image
@@ -38,7 +38,7 @@ async function createPage(photo) {
  */
 function createPageElement(photo, imageDataUrl, cutmarks, punchmarks) {
     const pageHtml = `
-        <div class="page-wrapper" data-order="${photo.order}" data-id="${photo.id || ''}">
+        <div class="page-wrapper" data-order="${photo.order}" data-id="${photo.id || ''}" data-rotation="${photo.rotation || 0}">
             <div class="page">
                 ${cutmarks}
                 <div class="punchmarks">${punchmarks}</div>
@@ -55,6 +55,7 @@ function createPageElement(photo, imageDataUrl, cutmarks, punchmarks) {
                     <span>Page ${photo.order} - ${photo.filename}</span>
                 </div>
                 <div class="actions">
+                    <div class="action btn-rotate">↻ Rotate</div>
                     <div class="action btn-delete">Delete</div>
                 </div>
             </div>
@@ -81,6 +82,12 @@ function createPageElement(photo, imageDataUrl, cutmarks, punchmarks) {
     
     $page.find('.page').append($imageDiv);
     
+    // Apply saved rotations if any
+    const savedRotation = photo.rotation || 0;
+    if (savedRotation > 0) {
+        applySavedRotations($page, savedRotation);
+    }
+    
     // Add event listeners
     attachPageEventListeners($page);
     
@@ -97,9 +104,55 @@ function attachPageEventListeners($page) {
         refreshOrder();
     });
 
+    $page.find('.btn-rotate').on('click', async function () {
+        const $wrapper = $page;
+        const $imageDiv = $page.find('.page-image')[0];
+        const filename = $imageDiv.getAttribute('data-filename');
+        const $button = $(this);
+        
+        // Visual feedback
+        $button.html('⟳ Rotating...');
+        $button.css('pointer-events', 'none');
+        
+        try {
+            await rotateExistingImage($imageDiv, filename);
+            
+            // Update rotation count
+            const currentRotation = parseInt($wrapper.attr('data-rotation') || '0');
+            const newRotation = (currentRotation + 1) % 4; // Keep between 0-3 (0°, 90°, 180°, 270°)
+            $wrapper.attr('data-rotation', newRotation);
+            
+            $button.html('↻ Rotate');
+        } catch (error) {
+            console.error('Error rotating image:', error);
+            $button.html('↻ Error');
+        } finally {
+            $button.css('pointer-events', 'auto');
+        }
+    });
+
     $page.find('.content').on('click', function (event) {
         window.mirrorWithEditor(event, window.quill);
     });
+}
+
+/**
+ * Applies saved rotations to an image element
+ * @param {jQuery} $page - Page element
+ * @param {number} rotationCount - Number of 90° rotations to apply
+ */
+async function applySavedRotations($page, rotationCount) {
+    if (rotationCount <= 0) return;
+    
+    const $imageDiv = $page.find('.page-image')[0];
+    const filename = $imageDiv.getAttribute('data-filename');
+    
+    try {
+        // Apply rotations directly to target - MUCH MORE EFFICIENT!
+        await rotateToTarget($imageDiv, rotationCount, filename);
+    } catch (error) {
+        console.error('Error applying saved rotations:', error);
+    }
 }
 
 /**

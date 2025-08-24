@@ -55,6 +55,7 @@ function saveAlbum() {
             id: $wrapper.data('id') || '',
             filename: $wrapper.find('.page-image').attr('data-filename') || '',
             caption: $wrapper.find('.text').text().trim(),
+            rotation: parseInt($wrapper.attr('data-rotation') || '0')
         });
     });
 
