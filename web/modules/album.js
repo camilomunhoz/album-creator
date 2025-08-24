@@ -53,7 +53,7 @@ function saveAlbum() {
         photos.push({
             order: Number($wrapper.attr('data-order')), // not data('order') due JQuery Sortable conflict
             id: $wrapper.data('id') || '',
-            filename: $wrapper.find('img').attr('data-filename') || '<unknown>',
+            filename: $wrapper.find('.page-image').attr('data-filename') || '',
             caption: $wrapper.find('.text').text().trim(),
         });
     });

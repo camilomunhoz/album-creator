@@ -63,16 +63,23 @@ function createPageElement(photo, imageDataUrl, cutmarks, punchmarks) {
 
     const $page = $(pageHtml);
     
-    // Use lazy loading for image
-    const $img = $('<img>', { 
-        src: imageDataUrl, 
-        alt: `Image ${photo.order}`,
-        loading: 'lazy'
+    // Create image div with background-image instead of img element
+    const $imageDiv = $('<div>', { 
+        class: 'page-image',
+        'data-filename': photo.filename
     });
     
-    $img.attr('data-filename', photo.filename);
+    // Set background image with proper CSS
+    $imageDiv.css({
+        'background-image': `url(${imageDataUrl})`,
+        'background-size': 'cover',
+        'background-position': 'center',
+        'background-repeat': 'no-repeat',
+        'width': '100%',
+        'height': '100%'
+    });
     
-    $page.find('.page').append($img);
+    $page.find('.page').append($imageDiv);
     
     // Add event listeners
     attachPageEventListeners($page);
@@ -101,7 +108,7 @@ function attachPageEventListeners($page) {
 function refreshOrder() {
     $('.album .page-wrapper:not(.sortable-being-dragged)').each(function(index) {
         $(this).attr('data-order', index + 1);
-        const filename = $(this).find('img').attr('data-filename') || '<unknown>';
+        const filename = $(this).find('.page-image').attr('data-filename') || '<unknown>';
         $(this).find('.page-bar span').text(`Page ${index + 1} - ${filename}`);
     });
 }

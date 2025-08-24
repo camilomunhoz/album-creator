@@ -3,6 +3,8 @@
  * Coordinates all modules and initializes the application
  */
 
+import './style.css';
+
 import { loadAlbumData, saveAlbum } from './modules/album.js';
 import { loadGallery } from './modules/gallery.js';
 import { initializeEditor, mirrorWithEditor } from './modules/editor.js';
@@ -16,16 +18,9 @@ let quill;
  * Initializes the application when DOM is ready
  */
 $(document).ready(function () {
-    // Initialize components
     initializeComponents();
-    
-    // Load initial data
     loadInitialData();
-    
-    // Setup event listeners
     setupEventListeners();
-    
-    // Setup UI functionality
     initializeSortable();
 });
 

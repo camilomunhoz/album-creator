@@ -63,7 +63,7 @@ function rotateImage(img) {
     ctx.save();
     // Move to center, rotate and draw image centered
     ctx.translate(canvas.width / 2, canvas.height / 2);
-    ctx.rotate(Math.PI / 2);
+    ctx.rotate(-Math.PI / 2);
     ctx.drawImage(img, -img.width / 2, -img.height / 2, img.width, img.height);
     ctx.restore();
     

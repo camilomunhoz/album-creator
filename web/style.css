@@ -89,7 +89,13 @@ body {
     height: 8cm;
     width: fit-content;
     font-size: 9pt;
-    background-color: white;
+    background-color: #151515;
+}
+
+.page .page-image {
+    aspect-ratio: 3 / 2;
+    height: 100%;
+    object-fit: cover;
 }
 
 .album .page-wrapper {
@@ -144,6 +150,7 @@ body {
     cursor: pointer;
     transition: opacity 0.2s ease;
     position: relative;
+    color: white;
 }
 .content .text {
     transform: rotate(180deg);
@@ -164,7 +171,7 @@ body {
     left: 2.2em;
     right: 1em;
     bottom: 1em;
-    border: 1pt dashed black;
+    border: 1pt dashed white;
     opacity: 0;
     transition: opacity 0.2s ease;
 }
@@ -172,11 +179,6 @@ body {
     opacity: 0.6;
 }
 
-.album .page img {
-    aspect-ratio: 3 / 2;
-    height: 100%;
-    object-fit: cover;
-}
 
 /* -------------------------------------------------------------------------- */
 /*                               Printing layout                              */
@@ -245,6 +247,11 @@ body {
     @page {
         size: A3 landscape;
         margin: 0;
+    }
+    * {
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact !important;
+        print-color-adjust: exact;
     }
     .screenonly,
     .punchmarks,
