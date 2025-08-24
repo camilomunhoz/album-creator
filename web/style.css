@@ -292,7 +292,6 @@ body {
     display: none;
 }
 
-
 .cutmark {
     position: absolute;
     width: var(--cutmark-size);
@@ -356,7 +355,7 @@ body {
     width: 0.5cm;
     height: 0.5cm;
     border-radius: 50%;
-    border: solid 1pt black;
+    border: 1pt solid red;
 }
 
 .page::before { /* cut limit */
@@ -366,6 +365,6 @@ body {
     left: calc(calc(var(--cutmark-size) / 2) - 1pt);
     right: calc(calc(var(--cutmark-size) / 2) - 1pt);
     bottom: calc(calc(var(--cutmark-size) / 2) - 1pt);
-    border: 1pt solid black;
+    border: 1pt solid red;
     box-sizing: border-box;
 }

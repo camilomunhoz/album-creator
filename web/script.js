@@ -5,6 +5,7 @@ $(document).ready(function () {
     $('.btn-refresh-gallery').on('click', loadGallery);
     $('.btn-print').on('click', () => window.print());
     $('.btn-save-album').on('click', saveAlbum);
+    $('.btn-toggle-marks').on('click', toggleCutMarks);
 
     $('.album').sortable({
         items: '.page-wrapper',
@@ -279,4 +280,20 @@ function generateId() {
         id += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     return id;
+}
+
+function toggleCutMarks() {
+    const $album = $('.album');
+    const currentState = $album.attr('data-cut-preview');
+    const newState = currentState === 'true' ? 'false' : 'true';
+    
+    $album.attr('data-cut-preview', newState);
+    
+    // Atualiza o texto do botão
+    const $button = $('.btn-toggle-marks');
+    if (newState === 'true') {
+        $button.text('Hide Cut Marks');
+    } else {
+        $button.text('Show Cut Marks');
+    }
 }
