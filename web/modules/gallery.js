@@ -37,7 +37,8 @@ async function addImageToAlbum(imageName) {
             filename: imageName,
             order: $('.page').length + 1,
             caption: '',
-            id: generateId()
+            id: generateId(),
+            rotation: 0
         });
         
         if ($page) {

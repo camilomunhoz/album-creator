@@ -16,12 +16,12 @@ import { processImage, rotateToTarget, rotateExistingImage } from './imageProces
 async function createPage(photo) {
     try {
         const imgUrl = `/photos/${photo.filename}`;
-        const imageDataUrl = await processImage(imgUrl, photo.filename);
+        const imageData = await processImage(imgUrl, photo.filename);
         
         const cutmarks = Array(4).fill('<div class="cutmark"></div>').join('');
         const punchmarks = Array(10).fill('<i></i>').join('');
         
-        return createPageElement(photo, imageDataUrl, cutmarks, punchmarks);
+        return createPageElement(photo, imageData.imageDataUrl, cutmarks, punchmarks, imageData.originalOrientation);
     } catch (error) {
         console.error('Error creating page:', error);
         return null;
@@ -34,16 +34,21 @@ async function createPage(photo) {
  * @param {string} imageDataUrl - Processed image URL
  * @param {string} cutmarks - Cutmarks HTML
  * @param {string} punchmarks - Punchmarks HTML
+ * @param {string} originalOrientation - Original orientation ('vertical' or 'horizontal')
  * @returns {jQuery} jQuery page element
  */
-function createPageElement(photo, imageDataUrl, cutmarks, punchmarks) {
+function createPageElement(photo, imageDataUrl, cutmarks, punchmarks, originalOrientation) {
     const pageHtml = `
-        <div class="page-wrapper" data-order="${photo.order}" data-id="${photo.id || ''}" data-rotation="${photo.rotation || 0}">
+        <div class="page-wrapper" 
+             data-order="${photo.order}" 
+             data-id="${photo.id || ''}" 
+             data-rotation="${photo.rotation || 0}"
+             data-orientation="${originalOrientation}">
             <div class="page">
                 ${cutmarks}
                 <div class="punchmarks">${punchmarks}</div>
                 <div class="description">
-                    <div class="content">
+                    <div class="content ${photo.caption ? 'written' : ''}">
                         <div class="text">
                             <p>${photo.caption || ''}</p>
                         </div>
@@ -73,11 +78,6 @@ function createPageElement(photo, imageDataUrl, cutmarks, punchmarks) {
     // Set background image with proper CSS
     $imageDiv.css({
         'background-image': `url(${imageDataUrl})`,
-        'background-size': 'cover',
-        'background-position': 'center',
-        'background-repeat': 'no-repeat',
-        'width': '100%',
-        'height': '100%'
     });
     
     $page.find('.page').append($imageDiv);

@@ -8,14 +8,18 @@ import { getCanvas, returnCanvas, hasInCache, getFromCache, addToCache } from '.
  * Processes an image, applying rotation if needed
  * @param {string} imgUrl - Image URL
  * @param {string} filename - Filename for cache
- * @returns {Promise<string>} Promise that resolves with processed image URL
+ * @returns {Promise<Object>} Promise that resolves with processed image data
  */
 function processImage(imgUrl, filename) {
     return new Promise((resolve, reject) => {
         // Check cache first
         if (hasInCache(filename)) {
             const cachedData = getFromCache(filename);
-            resolve(cachedData.imageDataUrl);
+            resolve({
+                imageDataUrl: cachedData.imageDataUrl,
+                originalOrientation: cachedData.originalOrientation,
+                isRotated: cachedData.isRotated
+            });
             return;
         }
 
@@ -23,6 +27,7 @@ function processImage(imgUrl, filename) {
         
         img.onload = function () {
             const isPortrait = img.height > img.width;
+            const originalOrientation = isPortrait ? 'vertical' : 'horizontal';
             let imageDataUrl;
 
             if (isPortrait) {
@@ -31,10 +36,19 @@ function processImage(imgUrl, filename) {
                 imageDataUrl = imgUrl;
             }
 
-            // Store in cache
-            addToCache(filename, { imageDataUrl, isRotated: isPortrait });
+            // Store in cache with orientation info
+            const cacheData = { 
+                imageDataUrl, 
+                isRotated: isPortrait, 
+                originalOrientation 
+            };
+            addToCache(filename, cacheData);
             
-            resolve(imageDataUrl);
+            resolve({
+                imageDataUrl,
+                originalOrientation,
+                isRotated: isPortrait
+            });
         };
 
         img.onerror = function () {

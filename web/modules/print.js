@@ -11,11 +11,13 @@ function setupPrintLayout() {
     const oddPages = [];
     const evenPages = [];
 
-    // Groups pages into batches of 6
+    const perPage = 9;
+
+    // Groups pages into batches
     function groupPages(pages) {
         const groups = [];
-        for (let i = 0; i < pages.length; i += 6) {
-            groups.push(pages.slice(i, i + 6));
+        for (let i = 0; i < pages.length; i += perPage) {
+            groups.push(pages.slice(i, i + perPage));
         }
         return groups;
     }
@@ -53,12 +55,33 @@ function setupPrintLayout() {
             const $evenA3 = createPrintSheet('even', currentSheet++, totalSheets);
             $(evenGroup).each(function() {
                 const $wrapper = $('<div class="page-wrapper"></div>');
+                if (needsRotation(this)) {
+                    $wrapper.addClass('needs-rotation');
+                }
                 $wrapper.append($(this).clone(true, true));
                 $evenA3.append($wrapper);
             });
             $('body').append($evenA3);
         }
     }
+}
+
+/**
+ * Even pages need special rotation to fit the back print,
+ * affected by factors as original orientation and current rotation.
+ * 
+ * Basically, if the final orientation is landscape, it needs to rotate.
+ * If it is portrait (90deg), does not rotate.
+ * 
+ * @param {DOMElement} page
+ * @returns {boolean}
+ */
+function needsRotation(page) {
+    const data = $(page).parents('.page-wrapper')[0].dataset;
+    return (
+        data.orientation === 'horizontal' && (data.rotation % 2) === 0 ||
+        data.orientation === 'vertical' && (data.rotation % 2) !== 0 
+    )
 }
 
 /**

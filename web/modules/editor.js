@@ -24,7 +24,17 @@ function mirrorWithEditor(event, quill) {
 
     quill.off('text-change');
     quill.on('text-change', function () {
-        $target.find('.text').html(quill.root.innerHTML);
+        const htmlContent = quill.root.innerHTML;
+        const textContent = quill.getText().trim();
+        
+        $target.find('.text').html(htmlContent);
+        
+        // Add or remove "written" class based on content
+        if (textContent.length > 0) {
+            $target.addClass('written');
+        } else {
+            $target.removeClass('written');
+        }
     });
 
     quill.focus();

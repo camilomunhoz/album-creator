@@ -104,9 +104,14 @@ body {
 }
 
 .page .page-image {
-    aspect-ratio: 3 / 2;
-    height: 100%;
+    /* aspect-ratio: 3 / 2; */
     object-fit: cover;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* width: calc(8cm * 3 / 2 + 150px); */
+    width: calc(8cm * 3 / 2);
+    height: 100%;
 }
 
 .album .page-wrapper {
@@ -156,24 +161,34 @@ body {
 }
 
 .description {
-    width: 150px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 75px;
 }
 
 .content {
-    padding: 2em;
-    padding-left: 3.5em;
+    padding: 1em;
     height: 100%;
     width: 100%;
     cursor: pointer;
     transition: opacity 0.2s ease;
     position: relative;
     color: white;
+    display: flex;
+    justify-content: flex-end;
 }
 .content .text {
     transform: rotate(180deg);
     writing-mode: vertical-rl;
     line-height: 1.2;
     height: 100%;
+    padding: 0.7em 0.3em 0.3em 0.5em;
+    border-radius: 8px;
+}
+.content.written .text {
+    background: #000A;
 }
 .content .text p {
     margin: 0;
@@ -184,11 +199,11 @@ body {
 .content::before {
     content: '';
     position: absolute;
-    top: 1em;
-    left: 2.2em;
-    right: 1em;
-    bottom: 1em;
-    border: 1pt dashed white;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: black;
     opacity: 0;
     transition: opacity 0.2s ease;
 }
@@ -209,7 +224,7 @@ body {
     padding: 10mm;
     display: grid;
     justify-items: start;
-    grid-template-columns: repeat(auto-fill, 18cm);
+    grid-template-columns: repeat(auto-fill, 13cm);
     grid-template-rows: repeat(auto-fill, 9cm);
 }
 
@@ -233,27 +248,39 @@ body {
 .a3-page.even {
     align-content: end;
 }
+.a3-page.even .needs-rotation .page-image {
+    transform: rotate(180deg);
+}
 .a3-page.even .page-wrapper:nth-of-type(1),
-.a3-page.even .page-wrapper:nth-of-type(3),
-.a3-page.even .page-wrapper:nth-of-type(5) {
+.a3-page.even .page-wrapper:nth-of-type(4),
+.a3-page.even .page-wrapper:nth-of-type(7) {
     grid-column: 1 / 2;
 }
 .a3-page.even .page-wrapper:nth-of-type(2),
-.a3-page.even .page-wrapper:nth-of-type(4),
-.a3-page.even .page-wrapper:nth-of-type(6) {
-    grid-column: 2 / 2;
-}
-.a3-page.even .page-wrapper:nth-of-type(1),
-.a3-page.even .page-wrapper:nth-of-type(2) {
-    grid-row: 3 / 4;
+.a3-page.even .page-wrapper:nth-of-type(5),
+.a3-page.even .page-wrapper:nth-of-type(8) {
+    grid-column: 2 / 3;
 }
 .a3-page.even .page-wrapper:nth-of-type(3),
-.a3-page.even .page-wrapper:nth-of-type(4) {
-    grid-row: 2 / 3;
+.a3-page.even .page-wrapper:nth-of-type(6),
+.a3-page.even .page-wrapper:nth-of-type(9) {
+    grid-column: 3 / 4;
 }
+/* ------------------------------------ - ----------------------------------- */
+.a3-page.even .page-wrapper:nth-of-type(7),
+.a3-page.even .page-wrapper:nth-of-type(8),
+.a3-page.even .page-wrapper:nth-of-type(9) {
+    grid-row: 2 / 2;
+}
+.a3-page.even .page-wrapper:nth-of-type(4),
 .a3-page.even .page-wrapper:nth-of-type(5),
 .a3-page.even .page-wrapper:nth-of-type(6) {
-    grid-row: 1 / 2;
+    grid-row: 3 / 3;
+}
+.a3-page.even .page-wrapper:nth-of-type(1),
+.a3-page.even .page-wrapper:nth-of-type(2),
+.a3-page.even .page-wrapper:nth-of-type(3) {
+    grid-row: 4 / 4;
 }
 
 .printonly {
