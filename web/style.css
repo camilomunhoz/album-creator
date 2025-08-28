@@ -401,6 +401,14 @@ body {
     padding: 0.3cm;
     justify-content: space-between;
 }
+/* Tricky logic to preview punchmarks on even pages */
+.page-wrapper:nth-of-type(2n)[data-orientation="horizontal"][data-rotation="0"] .punchmarks,
+.page-wrapper:nth-of-type(2n)[data-orientation="horizontal"][data-rotation="2"] .punchmarks,
+.page-wrapper:nth-of-type(2n)[data-orientation="vertical"][data-rotation="1"] .punchmarks,
+.page-wrapper:nth-of-type(2n)[data-orientation="vertical"][data-rotation="3"] .punchmarks {
+    left: unset;
+    right: 0;
+}
 
 .punchmarks i {
     width: 0.5cm;
